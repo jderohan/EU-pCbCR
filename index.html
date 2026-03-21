@@ -343,6 +343,75 @@
 </head>
 <body>
 
+<!-- ── PASSWORD GATE ─────────────────────────────────────────── -->
+<style>
+  #auth-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: #1F3864;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #auth-box {
+    background: white; border-radius: 10px; padding: 48px 40px;
+    width: 360px; text-align: center;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+  }
+  #auth-box h2 { color: #1F3864; font-size: 20px; margin-bottom: 6px; }
+  #auth-box p  { color: #666; font-size: 13px; margin-bottom: 24px; }
+  #auth-input {
+    width: 100%; padding: 11px 14px; font-size: 15px;
+    border: 2px solid #BFBFBF; border-radius: 6px;
+    outline: none; margin-bottom: 14px; letter-spacing: 1px;
+  }
+  #auth-input:focus { border-color: #2E4D7B; }
+  #auth-btn {
+    width: 100%; padding: 11px; font-size: 15px; font-weight: 600;
+    background: #1F3864; color: white; border: none; border-radius: 6px;
+    cursor: pointer; transition: background 0.2s;
+  }
+  #auth-btn:hover { background: #2E4D7B; }
+  #auth-error {
+    color: #C00000; font-size: 13px; margin-top: 10px;
+    display: none;
+  }
+  #main-content { display: none; }
+</style>
+
+<div id="auth-overlay">
+  <div id="auth-box">
+    <div style="font-size:40px;margin-bottom:12px;">🇪🇺</div>
+    <h2>EU Public CbCR Database</h2>
+    <p>Enter your password to access the database.</p>
+    <input id="auth-input" type="password" placeholder="Password"
+           onkeydown="if(event.key==='Enter')checkAuth()">
+    <button id="auth-btn" onclick="checkAuth()">Access Database</button>
+    <div id="auth-error">Incorrect password. Please try again.</div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    var _k = 'eupcbcr2025';
+    if (sessionStorage.getItem('cbcr_auth') === '1') unlock();
+    function checkAuth() {
+      if (document.getElementById('auth-input').value === _k) {
+        sessionStorage.setItem('cbcr_auth', '1');
+        unlock();
+      } else {
+        document.getElementById('auth-error').style.display = 'block';
+        document.getElementById('auth-input').value = '';
+        document.getElementById('auth-input').focus();
+      }
+    }
+    function unlock() {
+      document.getElementById('auth-overlay').style.display = 'none';
+      document.getElementById('main-content').style.display = 'block';
+    }
+    window.checkAuth = checkAuth;
+  })();
+</script>
+
+<div id="main-content">
+
 <header>
   <h1>🇪🇺 EU Public CbCR Directive (2021/2101) — Comparative Legislative Database</h1>
   <p>Directive (EU) 2021/2101 · All 27 EU Member State Implementing Laws · Research current as of March 2026</p>
@@ -1122,5 +1191,7 @@ function runSearch(term) {
 buildSidebar();
 showView('home');
 </script>
+
+</div><!-- /#main-content -->
 </body>
 </html>
