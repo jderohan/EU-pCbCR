@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EU Public CbCR Directive — Comparative Legislative Database</title>
+<style>
+  :root {
+    --eu-blue: #1F3864;
+    --eu-mid: #2E4D7B;
+    --eu-light: #D6E4F0;
+    --eu-gold: #C9A633;
+    --diff-red: #C00000;
+    --diff-red-bg: #FFE0E0;
+    --same-green-bg: #E2EFDA;
+    --amber-bg: #FFF2CC;
+    --amber-fg: #7F6000;
+    --grey-bg: #D9D9D9;
+    --border: #BFBFBF;
+    --white: #FFFFFF;
+    --text: #1A1A1A;
+    --font: 'Segoe UI', Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font);
+    background: #F4F7FB;
+    color: var(--text);
+    font-size: 14px;
+  }
+
+  /* ── HEADER ─────────────────────────────────────────────── */
+  header {
+    background: var(--eu-blue);
+    color: white;
+    padding: 18px 32px 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    position: sticky; top: 0; z-index: 100;
+  }
+  header h1 { font-size: 20px; font-weight: 700; letter-spacing: 0.3px; }
+  header p  { font-size: 12px; color: #BDD0E8; margin-top: 3px; }
+
+  .header-bar {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  /* ── SEARCH ─────────────────────────────────────────────── */
+  .search-box {
+    padding: 7px 14px;
+    border: 2px solid var(--eu-gold);
+    border-radius: 20px;
+    font-size: 13px;
+    background: rgba(255,255,255,0.12);
+    color: white;
+    width: 260px;
+    outline: none;
+  }
+  .search-box::placeholder { color: #9BBAD6; }
+  .search-box:focus { background: rgba(255,255,255,0.2); }
+
+  .btn {
+    padding: 6px 16px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.1);
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.15s;
+  }
+  .btn:hover { background: rgba(255,255,255,0.22); }
+  .btn.active { background: var(--eu-gold); color: var(--eu-blue); border-color: var(--eu-gold); font-weight: 700; }
+
+  /* ── LAYOUT ─────────────────────────────────────────────── */
+  .layout { display: flex; height: calc(100vh - 120px); }
+
+  /* ── SIDEBAR ─────────────────────────────────────────────── */
+  .sidebar {
+    width: 220px; min-width: 200px;
+    background: var(--eu-blue);
+    color: white;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+  .sidebar-section { padding: 12px 0 4px 0; }
+  .sidebar-title {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+    color: var(--eu-gold); padding: 0 14px 6px;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 4px;
+  }
+  .sidebar-item {
+    padding: 8px 14px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #BDD0E8;
+    border-left: 3px solid transparent;
+    transition: all 0.12s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .sidebar-item:hover { background: rgba(255,255,255,0.08); color: white; }
+  .sidebar-item.active {
+    background: rgba(201,166,51,0.18);
+    color: var(--eu-gold);
+    border-left-color: var(--eu-gold);
+    font-weight: 600;
+  }
+  .sidebar-item .flag { font-size: 14px; }
+  .badge {
+    margin-left: auto;
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.15);
+    color: #9BBAD6;
+  }
+  .badge.diff { background: rgba(192,0,0,0.4); color: #FFB3B3; }
+  .badge.early { background: rgba(0,176,80,0.3); color: #A9F0C3; }
+  .badge.late { background: rgba(255,192,0,0.3); color: #FFE066; }
+  .badge.pending { background: rgba(150,150,150,0.3); color: #D0D0D0; }
+
+  /* ── MAIN ─────────────────────────────────────────────── */
+  .main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+    background: #F4F7FB;
+  }
+
+  /* ── LEGEND ─────────────────────────────────────────────── */
+  .legend {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    margin-bottom: 16px;
+    padding: 10px 14px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-size: 11px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-dot {
+    width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0;
+  }
+
+  /* ── CARD ─────────────────────────────────────────────── */
+  .card {
+    background: white;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .card-header {
+    background: var(--eu-mid);
+    color: white;
+    padding: 12px 18px;
+    font-weight: 700;
+    font-size: 13px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .card-header .art-id {
+    background: var(--eu-gold);
+    color: var(--eu-blue);
+    padding: 2px 9px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 800;
+  }
+  .card-body { padding: 16px 18px; }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+
+  .panel {
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .panel-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 7px;
+    opacity: 0.7;
+  }
+  .panel-directive { background: var(--same-green-bg); border: 1px solid #C6E0B4; }
+  .panel-plain { background: var(--eu-light); border: 1px solid #B8D0E8; }
+
+  /* ── COUNTRY TABLE ─────────────────────────────────────── */
+  .ms-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-top: 14px;
+  }
+  .ms-table th {
+    background: var(--eu-mid);
+    color: white;
+    padding: 8px 10px;
+    text-align: left;
+    font-size: 11px;
+    position: sticky; top: 0;
+  }
+  .ms-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #EEE;
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  .ms-table tr:hover td { background: #F5F8FF; }
+  .ms-table tr.alt td { background: #FAFCFF; }
+  .ms-table tr.alt:hover td { background: #F0F4FF; }
+
+  .cell-diff { background: var(--diff-red-bg); color: var(--diff-red); font-weight: 600; }
+  .cell-same { background: var(--same-green-bg); }
+  .cell-unknown { background: var(--amber-bg); color: var(--amber-fg); }
+  .cell-notrans { background: var(--grey-bg); color: #666; font-style: italic; }
+  .cell-blank { color: #888; font-style: italic; font-size: 11px; }
+
+  /* ── COUNTRY PROFILE ─────────────────────────────────── */
+  .profile-grid {
+    display: grid;
+    grid-template-columns: 200px 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    font-size: 12px;
+  }
+  .pg-row { display: contents; }
+  .pg-row > div {
+    padding: 9px 12px;
+    border-bottom: 1px solid #EEE;
+    line-height: 1.5;
+  }
+  .pg-label { background: #EEF2F8; font-weight: 600; font-size: 11px; }
+  .pg-directive { background: var(--same-green-bg); }
+  .pg-ms { background: white; }
+  .pg-ms.diff { background: var(--diff-red-bg); color: var(--diff-red); font-weight: 600; }
+  .pg-ms.unknown { background: var(--amber-bg); color: var(--amber-fg); }
+  .pg-ms.notrans { background: var(--grey-bg); color: #666; }
+  .pg-ms.early { background: #CCFFCC; }
+  .pg-header { background: var(--eu-mid); color: white; font-weight: 700;
+               font-size: 11px; padding: 8px 12px; }
+
+  /* ── HOME / OVERVIEW ─────────────────────────────────── */
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .country-card {
+    border-radius: 8px;
+    padding: 12px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.15s;
+    font-size: 12px;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+  }
+  .country-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+  .country-card.has-diff { border-color: var(--diff-red); }
+  .country-card.not-trans { border-color: #AAA; background: var(--grey-bg); }
+  .country-card.early-adopter { border-color: #00B050; }
+  .country-card .cc-flag { font-size: 22px; }
+  .country-card .cc-name { font-weight: 700; margin: 4px 0 3px; font-size: 13px; }
+  .country-card .cc-status { font-size: 10px; }
+  .status-diff { color: var(--diff-red); }
+  .status-ok { color: #375623; }
+  .status-unknown { color: var(--amber-fg); }
+  .status-notrans { color: #666; }
+  .status-early { color: #00B050; }
+
+  /* ── SEARCH RESULTS ──────────────────────────────────── */
+  .search-results { margin-top: 4px; }
+  .search-hit {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: box-shadow 0.12s;
+  }
+  .search-hit:hover { box-shadow: 0 3px 10px rgba(0,0,0,0.1); }
+  .search-hit .hit-type { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 0.8px; }
+  .search-hit .hit-title { font-weight: 700; font-size: 13px; margin: 3px 0; }
+  .search-hit .hit-excerpt { font-size: 11px; color: #555; }
+  mark { background: #FFEB80; padding: 0 2px; border-radius: 2px; }
+
+  /* ── TABS ──────────────────────────────────────────── */
+  .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--eu-mid); margin-bottom: 16px; }
+  .tab-btn {
+    padding: 8px 18px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.12s;
+  }
+  .tab-btn:hover { color: var(--eu-mid); }
+  .tab-btn.active { color: var(--eu-mid); border-bottom-color: var(--eu-gold); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ── SCROLLBAR ──────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #F0F0F0; }
+  ::-webkit-scrollbar-thumb { background: #C0C0C0; border-radius: 3px; }
+
+  /* ── HIDDEN ─────────────────────────────────────────── */
+  .hidden { display: none !important; }
+
+  .stat-bar {
+    display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;
+  }
+  .stat-chip {
+    padding: 6px 14px; border-radius: 20px;
+    font-size: 12px; font-weight: 600;
+    border: 1px solid;
+  }
+  .sc-total { background: var(--eu-light); color: var(--eu-blue); border-color: #9BBAD6; }
+  .sc-diff   { background: var(--diff-red-bg); color: var(--diff-red); border-color: #FFAAAA; }
+  .sc-early  { background: #CCFFCC; color: #1A5C2A; border-color: #80D080; }
+  .sc-late   { background: var(--amber-bg); color: var(--amber-fg); border-color: #FFD080; }
+  .sc-pending{ background: var(--grey-bg); color: #444; border-color: #AAA; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🇪🇺 EU Public CbCR Directive (2021/2101) — Comparative Legislative Database</h1>
+  <p>Directive (EU) 2021/2101 · All 27 EU Member State Implementing Laws · Research current as of March 2026</p>
+  <div class="header-bar">
+    <input class="search-box" type="text" id="globalSearch" placeholder="🔍  Search articles, countries, differences…" oninput="runSearch(this.value)">
+    <button class="btn active" onclick="showView('home')">Overview</button>
+    <button class="btn" onclick="showView('articles')">Directive Articles</button>
+    <button class="btn" onclick="showView('countries')">By Country</button>
+    <button class="btn" onclick="showView('matrix')">Comparison Matrix</button>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Directive Articles</div>
+      <div id="art-nav"></div>
+    </div>
+    <div class="sidebar-section" style="margin-top:8px;">
+      <div class="sidebar-title">Member States</div>
+      <div id="ms-nav"></div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main" id="mainContent">
+
+    <!-- LEGEND -->
+    <div class="legend">
+      <strong style="font-size:11px;color:#555;">LEGEND:</strong>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--same-green-bg);border:1px solid #C6E0B4;"></div> Same as Directive</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--diff-red-bg);border:1px solid #FFAAAA;"></div> Confirmed difference</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--amber-bg);border:1px solid #FFD080;"></div> Unknown / not confirmed</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--grey-bg);border:1px solid #AAA;"></div> Not yet transposed</div>
+      <div class="legend-item"><div class="legend-dot" style="background:white;border:1px solid #CCC;"></div> Blank = no confirmed difference</div>
+    </div>
+
+    <!-- VIEWS -->
+    <div id="view-home"></div>
+    <div id="view-articles" class="hidden"></div>
+    <div id="view-countries" class="hidden"></div>
+    <div id="view-matrix" class="hidden"></div>
+    <div id="view-search" class="hidden"></div>
+    <div id="view-article-detail" class="hidden"></div>
+    <div id="view-country-detail" class="hidden"></div>
+  </main>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════════════════
+
+const ARTICLES = [
+  {
+    id: "Art. 48a", title: "Definitions",
+    fullText: `For the purposes of this Chapter, the following definitions shall apply:
+(1) 'affiliated undertaking' means an undertaking as defined in point (2) of Article 2 of Directive 2004/109/EC;
+(2) 'total consolidated revenue' means the revenue as presented in the consolidated financial statements of an ultimate parent undertaking for the relevant financial year;
+(3) 'standalone undertaking' means an undertaking that is not part of a group;
+(4) 'ultimate parent undertaking' means an undertaking which prepares the consolidated financial statements of the largest group and which itself is not an affiliated undertaking of another undertaking;
+(5) 'financial year' means the period referred to in Directive 2013/34/EU.`,
+    plainLanguage: `Sets out the key definitions used throughout Chapter 10a. Key terms defined include:
+• 'affiliated undertaking' — any entity linked to another
+• 'total consolidated revenue' — group-wide revenue from consolidated accounts
+• 'standalone undertaking' — a company not part of any group
+• 'ultimate parent undertaking' — the top-level parent that prepares consolidated accounts and is not itself a subsidiary
+• 'financial year' — the accounting period`,
+    artKey: "art48a"
+  },
+  {
+    id: "Art. 48b", title: "Undertakings and branches subject to the reporting obligation",
+    fullText: `1. Member States shall require ultimate parent undertakings governed by their national laws where the total consolidated revenue exceeded EUR 750 million in each of the last two consecutive financial years to draw up and make publicly available a report on income tax information.
+
+2. Member States shall also require standalone undertakings where net turnover exceeded EUR 750 million in each of the last two consecutive financial years.
+
+3. Member States shall require medium-sized and large subsidiary undertakings controlled by an ultimate parent undertaking governed by a non-Member State, where that parent's consolidated revenue exceeded EUR 750 million in each of the last two consecutive financial years.
+
+4. Member States shall also require branches of undertakings governed by non-Member State law to disclose the report, subject to size thresholds.
+
+5. Credit institutions already subject to public CbC reporting under Directive 2013/36/EU (CRD IV) are exempted.
+
+6. Below-threshold subsidiaries (below 'medium-sized') are not required to report.`,
+    plainLanguage: `Defines which companies must report. In scope:
+• EU-headquartered multinational groups with consolidated revenue > €750 million in each of the last 2 years
+• Standalone EU companies (not part of a group) with revenue > €750 million
+• EU subsidiaries and branches of non-EU multinationals (where the parent exceeds €750 million)
+
+Exempt: Banks/investment firms already reporting under CRD IV, and below-threshold subsidiaries.`,
+    artKey: "art48b"
+  },
+  {
+    id: "Art. 48c", title: "Content of the report on income tax information",
+    fullText: `1. The report shall include all of the following:
+(a) Name of the undertaking, financial year, currency used, and list of consolidated subsidiaries;
+(b) Brief description of the nature of activities;
+(c) Number of employees on a full-time equivalent basis;
+(d) Revenues (net turnover + other operating income + other specified income items);
+(e) Profit or loss before income tax;
+(f) Income tax accrued during the year (current year tax expense);
+(g) Income tax paid on a cash basis during the financial year;
+(h) Accumulated earnings at the end of the financial year.
+
+2. Information shall be presented separately for each EU Member State and separately for each jurisdiction on the EU blacklist (Annex I) or grey list (Annex II) of non-cooperative jurisdictions.
+
+3. For all other tax jurisdictions, information may be presented on an aggregate basis.
+
+4. The report shall cover all activities of the group including associated undertakings and joint ventures.`,
+    plainLanguage: `Lists what must be in the public report, broken down by jurisdiction:
+• Company/group name and financial year details
+• Brief description of activities (per jurisdiction)
+• Number of employees (FTE)
+• Revenues (net turnover + other income)
+• Profit/loss before tax
+• Income tax accrued (current year)
+• Income tax paid (cash basis)
+• Accumulated earnings at year-end
+
+Breakdown required for: every EU Member State individually + every EU blacklisted/grey-listed jurisdiction individually. All other jurisdictions may be shown as a single aggregate.`,
+    artKey: "art48c"
+  },
+  {
+    id: "Art. 48d", title: "Publication and accessibility",
+    fullText: `1. The report shall be published within 12 months of the balance sheet date, as provided for by each Member State in accordance with Directive (EU) 2017/1132.
+
+2. Member States may allow undertakings to omit the publication in the register provided that the report is made freely accessible on the undertaking's website (or an affiliated undertaking's website) in at least one official EU language, within the time limit, and the register contains a reference and web address.
+
+3. The report shall be accessible in at least one of the official languages of the Union, free of charge.
+
+4. The report shall remain accessible to the public for at least five consecutive years.`,
+    plainLanguage: `Covers how and when the report must be made public:
+• Publication deadline: within 12 months of the balance sheet date
+• Default: filed with the national company register
+• Option: Member States MAY allow companies to publish on their website instead (with register containing a link), if freely accessible
+• Must be in at least one official EU language, free of charge
+• Must remain accessible for at least 5 years`,
+    artKey: "art48d"
+  },
+  {
+    id: "Art. 48e", title: "Consolidated report on income tax information",
+    fullText: `1. Where an ultimate parent undertaking governed by a Member State's laws is itself a subsidiary of a non-EU undertaking, the obligations under Article 48b can be fulfilled by the report prepared by the ultimate parent undertaking of the group.
+
+2. A subsidiary undertaking may be exempted where either the subsidiary itself or its parent makes publicly available a compliant report covering the subsidiary's activities.
+
+3. Similarly, branches may be exempted if the undertaking that opened them produces a compliant report covering the branch.`,
+    plainLanguage: `Allows a single consolidated report to satisfy multiple entities' obligations:
+• An EU subsidiary need not produce its own report if its parent (EU or non-EU) already produces a compliant report covering the subsidiary
+• Branches are similarly exempt if the parent produces a compliant report covering the branch
+• Avoids duplication when multiple group entities are in scope`,
+    artKey: "art48e"
+  },
+  {
+    id: "Art. 48f", title: "Statement on the report on income tax information",
+    fullText: `Member States shall ensure that the members of the administrative, management and supervisory bodies of the ultimate parent undertaking or standalone undertaking, acting within the competences assigned to them by national law, have collective responsibility for ensuring that the report is drawn up and published in accordance with Articles 48b, 48c and 48d.
+
+This collective responsibility shall be reflected in a statement on the report included in the management report pursuant to Article 19(1) of Directive 2013/34/EU, or in a separate statement accompanying the management report.`,
+    plainLanguage: `Establishes director/officer responsibility:
+• The board of directors (or equivalent governing body) is collectively responsible for ensuring the report is prepared and published correctly
+• This responsibility must be reflected in a formal statement in (or alongside) the annual management report
+• Creates personal board-level accountability for compliance`,
+    artKey: "art48f"
+  },
+  {
+    id: "Art. 48g", title: "Temporary derogation for certain information (Safeguard Clause)",
+    fullText: `1. Member States MAY allow one or more specific items of information to be temporarily omitted where disclosure would be seriously prejudicial to the commercial position of the undertakings.
+
+2. Any omission must be clearly indicated in the report with a duly substantiated explanation.
+
+3. The derogation shall NOT apply to tax jurisdictions listed in Annex I (EU blacklist) of non-cooperative jurisdictions.
+
+4. Omitted information shall be disclosed in a subsequent report no later than five years after the original omission.
+
+5. The Commission shall review the application of this Article by 22 June 2026.`,
+    plainLanguage: `Provides an optional 'safeguard clause' for Member States:
+• Companies may omit specific data items if disclosure would seriously harm their competitive position
+• The report must clearly state that information has been omitted, and explain why (in general terms)
+• Cannot be used for EU blacklisted jurisdictions — those must always be fully reported
+• Omitted information must be disclosed in a subsequent report within 5 years
+• The Commission must review usage of this clause by June 2026
+• This clause is OPTIONAL — Member States may choose not to implement it`,
+    artKey: "art48g"
+  },
+  {
+    id: "Art. 48h", title: "Participating Member States (voluntary extension)",
+    fullText: `Member States may apply the provisions of this Chapter to undertakings and branches in situations not covered by Article 48b. In particular, Member States may apply the reporting requirements to ultimate parent undertakings of groups whose total consolidated revenue exceeded EUR 40 million in each of the last two consecutive financial years, or to standalone undertakings with net turnover exceeding EUR 40 million.`,
+    plainLanguage: `Allows Member States to go beyond the Directive's minimum requirements:
+• Member States can voluntarily extend public CbCR to smaller companies (e.g., groups with revenue > €40 million)
+• This is entirely optional — no Member State is required to do this
+• Allows more ambitious national tax transparency approaches`,
+    artKey: "art48h"
+  },
+  {
+    id: "Art. 1 (Outer)", title: "Amendments to Directive 2013/34/EU",
+    fullText: `Article 1 inserts the new Chapter 10a (Articles 48a to 48h) into Directive 2013/34/EU (the Accounting Directive). It also makes conforming amendments to exclude the income tax information covered by Chapter 10a from the non-financial reporting requirements in Articles 19a(3) and 29a(3).`,
+    plainLanguage: `The 'wrapper' article that inserts the new public CbCR rules (Articles 48a–48h) into the existing EU Accounting Directive (2013/34/EU). Also clarifies that this information need not be double-reported under separate non-financial reporting rules.`,
+    artKey: "art1outer"
+  },
+  {
+    id: "Art. 2 (Outer)", title: "Amendment to Directive 2004/109/EC (Transparency Directive)",
+    fullText: `Article 2 amends Directive 2004/109/EC to require that issuers whose securities are admitted to trading on an EU regulated market, and which are also in scope of Article 48b of Directive 2013/34/EU, shall make the income tax information report publicly available as part of their annual financial report.`,
+    plainLanguage: `Requires listed companies (whose shares trade on an EU regulated market) that are in scope of the public CbCR rules to also file the CbCR report as part of their annual report to capital markets regulators. Ensures CbCR reaches securities regulators and investors, not just company registries.`,
+    artKey: "art2outer"
+  },
+  {
+    id: "Art. 3 (Outer)", title: "Transposition",
+    fullText: `1. Member States shall bring into force the necessary laws, regulations and administrative provisions to comply with this Directive by 22 June 2023.
+2. Implementing provisions shall contain a reference to this Directive.
+3. Member States shall ensure that transposing provisions apply, at the latest, from the commencement date of the first financial year starting on or after 22 June 2024.`,
+    plainLanguage: `Sets the timetable:
+• Member States must have passed national implementing legislation by 22 June 2023
+• Rules must start applying no later than the first financial year beginning on or after 22 June 2024
+• For calendar-year companies: FY 2025 is the first reporting year (report due by 31 December 2026)
+• Member States that transposed early could apply the rules sooner`,
+    artKey: "art3outer"
+  },
+  {
+    id: "Art. 4 (Outer)", title: "Entry into force",
+    fullText: `This Directive shall enter into force on the twentieth day following that of its publication in the Official Journal of the European Union.`,
+    plainLanguage: `The Directive was published in the Official Journal on 1 December 2021 and entered into force on 21 December 2021.`,
+    artKey: "art4outer"
+  },
+  {
+    id: "Art. 5 (Outer)", title: "Addressees",
+    fullText: `This Directive is addressed to the Member States.`,
+    plainLanguage: `A standard EU legislative provision confirming that EU Directives are binding on Member States (not directly on companies). Each Member State must enact its own national law to implement the requirements.`,
+    artKey: "art5outer"
+  },
+];
+
+const MS = [
+  { country:"Austria", flag:"🇦🇹", lawRef:"CbCR-VG (BGBl I 83/2024)", published:"17 July 2024", status:"Confirmed (Late)", effectiveFY:"After 21 June 2024", threshold:"€750m", safeguard:"Yes", safeguardPeriod:"5 years", websiteExemption:"Unknown", pubDeadline:"12 months", langReq:"Min. 1 official EU language", penalties:"Not confirmed", art48b:"", art48c:"", art48d:"", art48e:"", art48f:"", art48g:"Adopted safeguard clause (5-yr standard)", art48h:"", notes:"Late transposition (law published July 2024 vs. June 2023 deadline).", source:"KPMG AT; PwC AT; BGBl I 83/2024" },
+  { country:"Belgium", flag:"🇧🇪", lawRef:"Law of 8 January 2024 (amending BCCA)", published:"26 Jan 2024", status:"Confirmed (Late)", effectiveFY:"On/after 22 June 2024", threshold:"€750m", safeguard:"Unknown", safeguardPeriod:"Unknown", websiteExemption:"Unknown", pubDeadline:"12 months", langReq:"Min. 1 official EU language", penalties:"Not confirmed", art48b:"", art48c:"", art48d:"", art48e:"", art48f:"", art48g:"", art48h:"", notes:"To a large extent mirrors the Directive. Late transposition.", source:"EY Belgium 2024" },
+  { country:"Bulgaria", flag:"🇧🇬", lawRef:"Amendment to Accountancy Act", published:"2023 (exact date unconfirmed)", status:"Confirmed", effectiveFY:"On/after 22 June 2024", threshold:"€750m", safeguard:"Yes", safeguardPeriod:"5 years", websiteExemption:"Unknown", pubDeadline:"12 months", langReq:"Min. 1 official EU language", penalties:"Not confirmed", art48b:"", art48c:"", art48d:"", art48e:"", art48f:"", art48g:"Adopted safeguard clause", art48h:"", notes:"Among 19 MS confirming implementation by end-2024.", source:"KPMG Implementation Tracker 2024" },
+  { country:"Croatia", flag:"🇭🇷", lawRef:"Amendment to Accounting Act (NN 58/2023)", published:"2023", status:"Confirmed (Early Adopter)", effectiveFY:"On/after 1 Jan 2024 (EARLY)", threshold:"€750m", safeguard:"Yes", safeguardPeriod:"5 years", websiteExemption:"Yes", pubDeadline:"12 months", langReq:"Min. 1 official EU language", penalties:"Not confirmed", art48b:"", art48c:"", art48d:"DIFFERENCE: Opted for website publication exemption. Also EARLY effective date: FY starting 1 Jan 2024 (vs. 22 June 2024 standard).", art48e:"", art48f:"", art48g:"Adopted safeguard clause", art48h:"", notes:"EARLY ADOPTER: FY starting 1 Jan 2024 as first reporting year. First reports due end-2025.", source:"KPMG Tracker; EY Croatia" },
+  { country:"Cyprus", flag:"🇨🇾", lawRef:"Not confirmed (Dec 2024)", published:"N/A", status:"Not fully transposed", effectiveFY:"TBD", threshold:"TBD", safeguard:"TBD", safeguardPeriod:"TBD", websiteExemption:"TBD", pubDeadline:"TBD", langReq:"TBD", penalties:"TBD", art48b:"TBD", art48c:"TBD", art48d:"TBD", art48e:"TBD", art48f:"TBD", art48g:"TBD", art48h:"TBD", notes:"Infringement proceedings pending (EC, December 2024). DATABASE TO BE UPDATED when law is enacted.", source:"EC infringement database, Dec 2024" },
+  { country:"Czech Republic", flag:"🇨🇿", lawRef:"Amendment to Accounting Act (zákon o účetnictví)", published:"2023", status:"Confirmed", effectiveFY:"On/after 22 June 2024", threshold:"€750m / CZK equivalent", safeguard:"Yes", safeguardPeriod:"5 years", websiteExemption:"Yes", pubDeadline:"12 months", langReq:"Min. 1 official EU language", penalties:"Not confirmed", art48b:"", art48c:"", art48d:"DIFFERENCE: Opted for website publication exemption.", art48e:"", art48f:"", art48g:"Adopted safeguard clause", art48h:"", notes:"Website publication exemption adopted.", source:"KPMG Implementation Tracker 2024" },
+  { country:"Denmark", flag:"🇩🇰", lawRef:"Amendment to årsregnskabsloven (Financial Statements Act, 1 June 2023)", published:"1 June 2023", status:"Confirmed", effectiveFY:"On/after 22 June 2024", threshold:"DKK 5.6bn (≈ €750m)", safeguard:"Yes", safeguardPeriod:"5 years", websiteExemption:"Unknown", pubDeadline:"12 months", langReq:"Danish or min. 1 official EU language", penalties:"Not confirmed", art48b:"DIFFERENCE: Threshold expressed as DKK 5.6 billion (€750m equivalent).", art48c:"", art48d:"Reports filed with Erhvervsstyrelsen (Danish Business Authority).", art48e:"", art48f:"", art48g:"Adopted safeguard clause", art48h:"", notes:"Standard implementation; threshold in local currency.", source:"Deloitte Denmark; PwC Denmark" },
+  { country:"Estonia", flag:"🇪🇪", lawRef:"Amendment to Accounting Act (Raamatupidamise seadus)", published:"2024", status:"Confirmed (Late)", effectiveFY:"On/after 22 July 2024 (slightly later)", threshold:"€750m", safeguard:"Unknown", safeguardPeriod:"Unknown", websiteExemption:"Unknown", pubDeadline:"12 months", langReq:"Min. 1 official EU language", penalties:"Not confirmed", art48b:"", art48c:"", art48d:"", art48e:"", art48f:"", art48g:"", art48h:"", notes:"DIFFERENCE: Effective date is 22 JULY 2024 (not 22 June 2024). Late transposition.", source:"KPMG Tracker" },
+  { country:"Finland", flag:"🇫🇮", lawRef:"Amendment to Accounting Act (Kirjanpitolaki), May 2024", published:"May 2024", status:"Confirmed (Late)", effectiveFY:"On/after 22 June 2024", threshold:"€750m", safeguard:"Unknown", safeguardPeriod:"Unknown", websiteExemption:"Unknown", pubDeadline:"12 months", langReq:"Finnish/Swedish or EU language", penalties:"Not confirmed", art48b:"", art48c:"", art48d:"", art48e:"", art48f:"", art48g:"", art48h:"", notes:"Late transposition (law May 2024).", source:"Finlex; Orbitax" },
+  { country:"France", flag:"🇫🇷", lawRef:"Ordonnance n°2023-483 (21 June 2023) + Décret/Arrêté (22 June 2023); incorporated into Code de Commerce", published:"22 June 2023", status:"Confirmed", effectiveFY:"On/after 22 June 2024", threshold:"€750m", safeguard:"Yes", safeguardPeriod:"5 years", websiteExemption:"Unknown", pubDeadline:"12 months", langReq:"French or min. 1 official EU language", penalties:"Not confirmed", art48b:"", art48c:"", art48d:"", art48e:"", art48f:"", art48g:"Adopted safeguard clause", art48h:"", notes:"Implemented by government Ordonnance (executive order) under parliamentary delegation.", source:"KPMG FR; PwC Avocats; Journal Officiel 22 June 2023" },
+  { country:"Germany", flag:"🇩🇪", lawRef:"HGB §§342–342p (Bundesgesetzblatt I S.1433, 19 June 2023)", published:"19 June 2023", status:"Confirmed", effectiveFY:"On/after 22 June 2024", threshold:"€750m", safeguard:"Yes — SHORTER period", safeguardPeriod:"4 years (Directive: 5 years)", websiteExemption:"Yes", pubDeadline:"12 months", langReq:"German required (+ EU language)", penalties:"Max €250,000 (higher than Directive standard)", art48b:"", art48c:"", art48d:"DIFFERENCE: Website publication exemption adopted. German language mandatory.", art48e:"", art48f:"", art48g:"DIFFERENCE: Safeguard clause period reduced to 4 years (Directive allows up to 5 years).", art48h:"", notes:"TWO KEY DIFFERENCES: (1) Safeguard clause = 4 years max (vs. 5 in Directive); (2) Max fine = €250,000 (more stringent). German language mandatory.", source:"EY Germany; BGBl I S.1433, 19 June 2023" },
+  { country:"Greece", flag:"🇬🇷", lawRef:"Amendment to Law 4308/2014 (Greek Accounting Standards)", published:"2023", status:"Confirmed", effectiveFY:"On/after 22 June 2024", threshold:"€750m", safeguard:"Yes", safeguardPeriod:"5 years", websiteExemption:"Yes", pubDeadline:"12 months", langReq:"Min. 1 official EU language", penalties:"Not confirmed", art48b:"", art48c:"", art48d:"DIFFERENCE: Opted for website publication exemption.", art48e:"", art48f:"", art48g:"Adopted safeguard clause", art48h:"", notes:"Website publication exemption adopted.", source:"KPMG Implementation Tracker 2024" },
+  { country:"Hungary", flag:"🇭🇺", lawRef:"Amendment to Accounting Act (Számviteli törvény), May 2023", published:"May 2023", status:"Confirmed", effectiveFY:"On/after 22 June 2024", threshold:"€750m", safeguard:"Unknown", safeguardPeriod:"Unknown", websiteExemption:"Unknown", pubDeadline:"DIFFERENCE: 6 months (listed); 5 months (others)", langReq:"Hungarian or EU language", penalties:"Not confirmed", art48b:"", art48c:"", art48d:"DIFFERENCE: Publication deadline is 6 months after balance sheet date for listed companies; 5 months for standalone/other entities. The Directive standard is 12 months. This is significantly more demanding.", art48e:"", art48f:"", art48g:"", art48h:"", notes:"KEY DIFFERENCE: Much shorter publication deadline — 6 months (listed) / 5 months (others) vs. Directive's 12 months.", source:"KPMG Tracker; WTS Klient" },
+  { country:"Ireland", flag:"🇮🇪", lawRef:"S.I. No. 415/2023 (EU Disclosure of Income Tax Information Regulations 2023)", published:"11 Aug 2023", status:"Confirmed", effectiveFY:"On/after 22 June 2024", threshold:"€750m", safeguard:"Yes (5 years)", safeguardPeriod:"5 years", websiteExemption:"Yes", pubDeadline:"12 months", langReq:"English or EU language", penalties:"Not confirmed", art48b:"", art48c:"", art48d:"DIFFERENCE: Opted for website publication exemption.", art48e:"", art48f:"", art48g:"Adopted full 5-year safeguard clause per Directive.", art48h:"", notes:"Standard implementation with safeguard clause and website exemption.", source:"EY Ireland; SI 415/2023" },
+  { country:"Italy", flag:"🇮🇹", lawRef:"Legislative Decree No. 125 of 6 September 2024 (GU n. 214 of 12 September 2024)", published:"12 Sep 2024 (GU n.214)", status:"Confirmed (Late)", effectiveFY:"On/after 22 June 2024", threshold:"€750m", safeguard:"Unknown", safeguardPeriod:"Unknown", websiteExemption:"No — register only", pubDeadline:"12 months", langReq:"Italian required + EU language (more stringent)", penalties:"Not confirmed", art48b:"", art48c:"", art48d:"DIFFERENCE: (1) Website publication exemption NOT adopted — must file with company register. (2) Italian translation mandatory in addition to EU language requirement.", art48e:"", art48f:"", art48g:"", art48h:"", notes:"TWO DIFFERENCES: (1) No website publication option; (2) Italian translation mandatory. Very late transposition (Sep 2024 vs. June 2023 deadline).", source:"EY Italy; GU n.214, 12 Sep 2024; ITR Italy" },
+  { country:"Latvia", flag:"🇱🇻", lawRef:"Amendment to Law on Annual Reports and Consolidated Annual Reports", published:"2023", status:"Confirmed", effectiveFY:"On/after 22 June 2024", threshold:"€750m", safeguard:"Yes", safeguardPeriod:"5 years", websiteExemption:"Yes", pubDeadline:"12 months", langReq:"Min. 1 official EU language", penalties:"Not confirmed", art48b:"", art48c:"", art48d:"DIFFERENCE: Opted for website publication exemption.", art48e:"", art48f:"", art48g:"Adopted safeguard clause", art48h:"", notes:"Standard with safeguard clause and website exemption.", source:"KPMG Tracker 2024" },
+  { country:"Lithuania", flag:"🇱🇹", lawRef:"Amendment to Law on Financial Reporting by Undertakings", published:"2023", status:"Confirmed", effectiveFY:"On/after 22 June 2024", threshold:"€750m", safeguard:"Yes", safeguardPeriod:"5 years", websiteExemption:"Yes", pubDeadline:"12 months", langReq:"Min. 1 official EU language", penalties:"Not confirmed", art48b:"", art48c:"", art48d:"DIFFERENCE: Opted for website publication exemption.", art48e:"", art48f:"", art48g:"Adopted safeguard clause", art48h:"", notes:"Standard with safeguard clause and website exemption.", source:"KPMG Tracker 2024" },
+  { country:"Luxembourg", flag:"🇱🇺", lawRef:"Public CbCR Law, published 22 August 2023", published:"22 Aug 2023", status:"Confirmed", effectiveFY:"On/after 22 June 2024", threshold:"€750m", safeguard:"Yes", safeguardPeriod:"5 years", websiteExemption:"Yes", pubDeadline:"12 months", langReq:"Min. 1 official EU language", penalties:"€500–€25,000 (specified)", art48b:"", art48c:"", art48d:"DIFFERENCE: Opted for website publication exemption.", art48e:"", art48f:"", art48g:"Adopted safeguard clause", art48h:"", notes:"NOTABLE: Explicit penalty range of €500–€25,000 specified.", source:"EY Luxembourg; KPMG" },
+  { country:"Malta", flag:"🇲🇹", lawRef:"Companies Act (Cap. 386), Act XVIII of 2024 — Arts. 213B–213D + 4th Schedule", published:"2024", status:"Confirmed (Late)", effectiveFY:"On/after 22 June 2024", threshold:"€750m", safeguard:"Unknown", safeguardPeriod:"Unknown", websiteExemption:"Unknown", pubDeadline:"12 months", langReq:"Maltese or English", penalties:"Not confirmed", art48b:"", art48c:"", art48d:"", art48e:"", art48f:"", art48g:"", art48h:"", notes:"Late transposition. Incorporated into Companies Act.", source:"Grant Thornton Malta; KPMG Tracker" },
+  { country:"Netherlands", flag:"🇳🇱", lawRef:"Implementatiewet Richtlijn openbaarmaking winstbelasting (Staatsblad 2023, 517) + Decree (Staatsblad 2024, 43)", published:"6 Dec 2023 + 14 Feb 2024", status:"Confirmed (Late)", effectiveFY:"On/after 22 June 2024", threshold:"€750m", safeguard:"Yes", safeguardPeriod:"5 years", websiteExemption:"Unknown", pubDeadline:"12 months", langReq:"Dutch or EU language", penalties:"Not confirmed", art48b:"", art48c:"", art48d:"", art48e:"", art48f:"", art48g:"Adopted safeguard clause", art48h:"", notes:"Implementation via Act + separate Decree. Late transposition.", source:"EY Netherlands; Staatsblad 2023/517 and 2024/43" },
+  { country:"Poland", flag:"🇵🇱", lawRef:"Amendment to Accounting Act (Ustawa o rachunkowości), signed 16 April 2024", published:"April 2024", status:"Confirmed (Late)", effectiveFY:"On/after 22 June 2024", threshold:"PLN 3.5bn (≈ €750m)", safeguard:"Unknown", safeguardPeriod:"Unknown", websiteExemption:"Unknown", pubDeadline:"12 months", langReq:"Polish or EU language", penalties:"Not confirmed", art48b:"DIFFERENCE: Threshold expressed as PLN 3.5 billion (€750m equivalent in Polish zloty).", art48c:"", art48d:"", art48e:"", art48f:"", art48g:"", art48h:"", notes:"Late transposition (April 2024). Threshold in PLN.", source:"KPMG Poland; RSM Poland" },
+  { country:"Portugal", flag:"🇵🇹", lawRef:"Decreto-Lei n.º 73/2023 of 23 August 2023", published:"23 Aug 2023", status:"Confirmed", effectiveFY:"On/after 22 June 2024", threshold:"€750m", safeguard:"Yes", safeguardPeriod:"5 years", websiteExemption:"Unknown", pubDeadline:"12 months", langReq:"Language of financial statements + EU language", penalties:"Not confirmed", art48b:"", art48c:"", art48d:"", art48e:"", art48f:"", art48g:"Adopted safeguard clause", art48h:"", notes:"Implemented by Decree-Law (executive legislation).", source:"EY Portugal; Diário da República, 23 Aug 2023" },
+  { country:"Romania", flag:"🇷🇴", lawRef:"Law No. 295/2022 (Official Gazette No. 873, 7 September 2022)", published:"7 Sep 2022", status:"Confirmed (Early Adopter)", effectiveFY:"On/after 1 Jan 2023 (EARLIEST in EU)", threshold:"€750m", safeguard:"Yes", safeguardPeriod:"5 years", websiteExemption:"Yes", pubDeadline:"12 months", langReq:"Romanian or EU language", penalties:"Not confirmed", art48b:"", art48c:"", art48d:"DIFFERENCE: Website publication exemption adopted. EARLIEST effective date in EU: FY starting 1 Jan 2023.", art48e:"", art48f:"", art48g:"Adopted safeguard clause", art48h:"", notes:"EARLIEST ADOPTER in EU: Law published Sep 2022; first reporting year FY 2023. First EU MS to require actual public CbCR reports.", source:"KPMG Romania; EY Romania; OG No. 873, 7 Sep 2022" },
+  { country:"Slovakia", flag:"🇸🇰", lawRef:"Amendment to Accounting Act (zákon o účtovníctve)", published:"2023", status:"Confirmed", effectiveFY:"On/after 22 June 2024", threshold:"€750m", safeguard:"Yes", safeguardPeriod:"5 years", websiteExemption:"Yes", pubDeadline:"12 months", langReq:"Any official EU language (permissive)", penalties:"Not confirmed", art48b:"", art48c:"", art48d:"DIFFERENCE: Opted for website publication exemption. Report may be in ANY official EU language (not just Slovak).", art48e:"", art48f:"", art48g:"Adopted safeguard clause", art48h:"", notes:"More permissive language rule: any official EU language accepted (not requiring Slovak).", source:"KPMG Tracker 2024" },
+  { country:"Slovenia", flag:"🇸🇮", lawRef:"Not confirmed (Dec 2024)", published:"N/A", status:"Not fully transposed", effectiveFY:"TBD", threshold:"TBD", safeguard:"TBD", safeguardPeriod:"TBD", websiteExemption:"TBD", pubDeadline:"TBD", langReq:"TBD", penalties:"TBD", art48b:"TBD", art48c:"TBD", art48d:"TBD", art48e:"TBD", art48f:"TBD", art48g:"TBD", art48h:"TBD", notes:"Infringement proceedings pending (EC, December 2024). DATABASE TO BE UPDATED when law is enacted.", source:"EC infringement database, Dec 2024" },
+  { country:"Spain", flag:"🇪🇸", lawRef:"Law 18/2022 of 28 Sep 2022 + implementing regulations (BOE 22 December 2022)", published:"22 Dec 2022", status:"Confirmed", effectiveFY:"On/after 22 June 2024", threshold:"€750m", safeguard:"Yes", safeguardPeriod:"5 years", websiteExemption:"Yes", pubDeadline:"DIFFERENCE: 6 months (Directive: 12 months)", langReq:"Spanish or EU language", penalties:"Not confirmed", art48b:"", art48c:"", art48d:"DIFFERENCE: Publication deadline is 6 months after balance sheet date — half of the 12-month Directive standard. Also adopted website publication exemption.", art48e:"", art48f:"", art48g:"Adopted safeguard clause", art48h:"", notes:"KEY DIFFERENCE: Spain requires publication within 6 months of balance sheet date (vs. 12 months in Directive) — significantly more demanding.", source:"EY Spain; BOE 22 Dec 2022; KPMG Spain" },
+  { country:"Sweden", flag:"🇸🇪", lawRef:"Lag om offentlig land-för-land-rapportering, enacted 13 February 2023", published:"13 Feb 2023", status:"Confirmed", effectiveFY:"On/after 31 May 2024 (slightly different)", threshold:"SEK 8.1bn (≈ €750m)", safeguard:"Yes", safeguardPeriod:"5 years", websiteExemption:"Unknown", pubDeadline:"12 months", langReq:"Swedish or EU language", penalties:"Not confirmed", art48b:"DIFFERENCE: Threshold expressed as SEK 8.1 billion (€750m equivalent in Swedish krona). Effective date: 31 May 2024 (slightly earlier than 22 June 2024).", art48c:"", art48d:"", art48e:"", art48f:"", art48g:"Adopted safeguard clause", art48h:"", notes:"One of earliest MS to enact legislation (Feb 2023). Threshold in SEK; slightly different effective date.", source:"EY Sweden; Swedish parliament records; KPMG Tracker" },
+];
+
+// ══════════════════════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════════════════════
+function hasDiff(ms) {
+  const fields = ['art48b','art48c','art48d','art48e','art48f','art48g','art48h'];
+  return fields.some(f => ms[f] && ms[f].includes('DIFFERENCE'));
+}
+function getStatusClass(ms) {
+  if (ms.status.startsWith('Not fully')) return 'not-trans';
+  if (ms.status.includes('Early')) return 'early-adopter';
+  return hasDiff(ms) ? 'has-diff' : '';
+}
+function cellClass(val) {
+  if (!val || val.trim() === '') return 'cell-blank';
+  if (val === 'TBD' || val === 'Unknown' || val === 'Not confirmed') return 'cell-unknown';
+  if (val.includes('DIFFERENCE')) return 'cell-diff';
+  if (val.startsWith('Not')) return 'cell-notrans';
+  return 'cell-same';
+}
+function cellVal(val) {
+  if (!val || val.trim() === '') return '<em style="color:#aaa;font-size:11px">—</em>';
+  return esc(val);
+}
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function highlight(text, term) {
+  if (!term) return esc(text);
+  const re = new RegExp('(' + term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'gi');
+  return esc(text).replace(re, '<mark>$1</mark>');
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════════════════════
+let currentView = 'home';
+
+function showView(view, extra) {
+  ['home','articles','countries','matrix','search','article-detail','country-detail'].forEach(v => {
+    document.getElementById('view-'+v).classList.add('hidden');
+  });
+  document.getElementById('view-'+view).classList.remove('hidden');
+
+  // update button states
+  document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+  if (view === 'home') document.querySelectorAll('.btn')[0].classList.add('active');
+  if (view === 'articles') document.querySelectorAll('.btn')[1].classList.add('active');
+  if (view === 'countries') document.querySelectorAll('.btn')[2].classList.add('active');
+  if (view === 'matrix') document.querySelectorAll('.btn')[3].classList.add('active');
+
+  currentView = view;
+
+  if (view === 'home' && !document.getElementById('view-home').innerHTML) renderHome();
+  if (view === 'articles' && !document.getElementById('view-articles').innerHTML) renderArticles();
+  if (view === 'countries' && !document.getElementById('view-countries').innerHTML) renderCountries();
+  if (view === 'matrix' && !document.getElementById('view-matrix').innerHTML) renderMatrix();
+  if (view === 'article-detail') renderArticleDetail(extra);
+  if (view === 'country-detail') renderCountryDetail(extra);
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// SIDEBAR
+// ══════════════════════════════════════════════════════════════════════
+function buildSidebar() {
+  // Articles
+  let artHtml = '';
+  ARTICLES.forEach((a, i) => {
+    artHtml += `<div class="sidebar-item" onclick="showView('article-detail',${i})" id="sart-${i}">
+      <span style="font-size:10px;opacity:0.7">${a.id.split(' ')[1] || a.id}</span>
+      <span style="flex:1">${a.title.substring(0,28)}${a.title.length>28?'…':''}</span>
+    </div>`;
+  });
+  document.getElementById('art-nav').innerHTML = artHtml;
+
+  // Member States
+  let msHtml = '';
+  MS.forEach((ms, i) => {
+    const hasd = hasDiff(ms);
+    const isNT = ms.status.startsWith('Not fully');
+    const isEarly = ms.status.includes('Early');
+    const isLate = ms.status.includes('Late');
+    let badge = '';
+    if (isNT) badge = '<span class="badge pending">⚠</span>';
+    else if (isEarly) badge = '<span class="badge early">Early</span>';
+    else if (hasd) badge = '<span class="badge diff">Δ diff</span>';
+    else if (isLate) badge = '<span class="badge late">Late</span>';
+    msHtml += `<div class="sidebar-item" onclick="showView('country-detail',${i})" id="sms-${i}">
+      <span class="flag">${ms.flag}</span>
+      <span style="flex:1">${ms.country}</span>
+      ${badge}
+    </div>`;
+  });
+  document.getElementById('ms-nav').innerHTML = msHtml;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// HOME VIEW
+// ══════════════════════════════════════════════════════════════════════
+function renderHome() {
+  const confirmed = MS.filter(m => !m.status.startsWith('Not')).length;
+  const hasDiffs  = MS.filter(m => hasDiff(m)).length;
+  const early     = MS.filter(m => m.status.includes('Early')).length;
+  const late      = MS.filter(m => m.status.includes('Late') && !m.status.includes('Early')).length;
+  const notTrans  = MS.filter(m => m.status.startsWith('Not')).length;
+
+  let html = `
+  <div class="stat-bar">
+    <div class="stat-chip sc-total">🇪🇺 ${MS.length} Member States tracked</div>
+    <div class="stat-chip sc-diff">Δ ${hasDiffs} with confirmed differences</div>
+    <div class="stat-chip sc-early">★ ${early} early adopters</div>
+    <div class="stat-chip sc-late">⏰ ${late} late transpositions</div>
+    <div class="stat-chip sc-pending">⚠ ${notTrans} pending transposition</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">🇪🇺 Directive (EU) 2021/2101 — All 27 Member States</div>
+    <div class="card-body">
+      <p style="font-size:12px;margin-bottom:12px;line-height:1.7">
+        Click any country card to view its implementing law and article-by-article comparison.<br>
+        <strong style="color:var(--diff-red)">Red border</strong> = confirmed difference from the Directive &nbsp;|&nbsp;
+        <strong style="color:#00B050">Green border</strong> = early adopter &nbsp;|&nbsp;
+        <strong>Grey</strong> = not yet transposed
+      </p>
+      <div class="overview-grid">`;
+  MS.forEach((ms, i) => {
+    const cls = getStatusClass(ms);
+    const statusText = ms.status.startsWith('Not') ? `<span class="status-notrans">⚠ Not transposed</span>`
+      : ms.status.includes('Early') ? `<span class="status-early">★ Early adopter</span>`
+      : hasDiff(ms) ? `<span class="status-diff">Δ Differences found</span>`
+      : ms.status.includes('Late') ? `<span class="status-unknown">⏰ Late (confirmed)</span>`
+      : `<span class="status-ok">✓ Confirmed</span>`;
+    html += `<div class="country-card ${cls}" onclick="showView('country-detail',${i})">
+      <div class="cc-flag">${ms.flag}</div>
+      <div class="cc-name">${ms.country}</div>
+      <div class="cc-status">${statusText}</div>
+      <div style="font-size:10px;color:#888;margin-top:4px">${ms.lawRef.substring(0,45)}${ms.lawRef.length>45?'…':''}</div>
+    </div>`;
+  });
+  html += `</div></div></div>
+
+  <div class="card">
+    <div class="card-header">📋 Quick Reference — Key Differences from Directive</div>
+    <div class="card-body">
+    <table class="ms-table">
+      <thead><tr>
+        <th>Country</th><th>Publication Deadline</th><th>Safeguard Period</th>
+        <th>Website Exemption</th><th>Language Req.</th><th>Penalties</th><th>First Reporting FY</th>
+      </tr></thead>
+      <tbody>`;
+  MS.forEach((ms, i) => {
+    const alt = i % 2 === 0 ? 'alt' : '';
+    const ntClass = ms.status.startsWith('Not') ? 'cell-notrans' : '';
+    const pdClass = ms.pubDeadline && ms.pubDeadline.includes('6 months') ? 'cell-diff' : '';
+    const spClass = ms.safeguardPeriod && ms.safeguardPeriod.includes('4 years') ? 'cell-diff' : '';
+    const efFY = ms.effectiveFY.includes('1 Jan 2023') ? `<span class="cell-same" style="padding:2px 6px;border-radius:4px">★ ${esc(ms.effectiveFY)}</span>`
+                : ms.effectiveFY.includes('1 Jan 2024') ? `<span class="cell-same" style="padding:2px 6px;border-radius:4px">★ ${esc(ms.effectiveFY)}</span>`
+                : esc(ms.effectiveFY);
+    html += `<tr class="${alt}" onclick="showView('country-detail',${i})" style="cursor:pointer">
+      <td><strong>${ms.flag} ${esc(ms.country)}</strong></td>
+      <td class="${ntClass||pdClass}">${cellVal(ms.pubDeadline)}</td>
+      <td class="${ntClass||spClass}">${cellVal(ms.safeguardPeriod)}</td>
+      <td class="${ntClass}">${cellVal(ms.websiteExemption)}</td>
+      <td class="${ntClass}">${cellVal(ms.langReq)}</td>
+      <td class="${ntClass}">${cellVal(ms.penalties)}</td>
+      <td>${efFY}</td>
+    </tr>`;
+  });
+  html += `</tbody></table></div></div>`;
+  document.getElementById('view-home').innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// ARTICLES VIEW
+// ══════════════════════════════════════════════════════════════════════
+function renderArticles() {
+  let html = `<div class="tabs">
+    <div class="tab-btn active" onclick="switchTab(this,'operative')">Operative Articles (48a–48h)</div>
+    <div class="tab-btn" onclick="switchTab(this,'outer')">Outer Articles (1–5)</div>
+  </div>
+  <div class="tab-content active" id="tab-operative">`;
+
+  ARTICLES.slice(0,8).forEach((a, i) => {
+    html += artCard(a, i, true);
+  });
+  html += `</div><div class="tab-content" id="tab-outer">`;
+  ARTICLES.slice(8).forEach((a, i) => {
+    html += artCard(a, i+8, false);
+  });
+  html += `</div>`;
+  document.getElementById('view-articles').innerHTML = html;
+}
+function artCard(a, idx, showMSCount) {
+  let diffCount = 0;
+  if (showMSCount) {
+    const fieldKey = 'art' + a.artKey.replace('art','');
+    diffCount = MS.filter(ms => ms[a.artKey] && ms[a.artKey].includes('DIFFERENCE')).length;
+  }
+  return `<div class="card" onclick="showView('article-detail',${idx})" style="cursor:pointer">
+    <div class="card-header">
+      <span class="art-id">${esc(a.id)}</span>
+      ${esc(a.title)}
+      ${showMSCount && diffCount > 0 ? `<span style="margin-left:auto;font-size:11px;background:rgba(192,0,0,0.3);padding:2px 8px;border-radius:10px">${diffCount} MS differ</span>` : ''}
+    </div>
+    <div class="card-body">
+      <div class="two-col">
+        <div class="panel panel-directive">
+          <div class="panel-title">📜 Directive Text (Summary)</div>
+          ${esc(a.fullText.substring(0,350))}${a.fullText.length>350?'…':''}
+        </div>
+        <div class="panel panel-plain">
+          <div class="panel-title">💬 Plain Language</div>
+          ${esc(a.plainLanguage)}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// ARTICLE DETAIL VIEW
+// ══════════════════════════════════════════════════════════════════════
+function renderArticleDetail(idx) {
+  const a = ARTICLES[idx];
+  const artKey = a.artKey;
+
+  // Highlight sidebar
+  document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+  const sartEl = document.getElementById('sart-'+idx);
+  if (sartEl) { sartEl.classList.add('active'); sartEl.scrollIntoView({block:'nearest'}); }
+
+  let html = `<div class="card">
+    <div class="card-header" style="font-size:15px">
+      <span class="art-id">${esc(a.id)}</span>
+      ${esc(a.title)}
+    </div>
+    <div class="card-body">
+      <div class="two-col" style="margin-bottom:16px">
+        <div class="panel panel-directive">
+          <div class="panel-title">📜 Full Directive Text</div>
+          <pre style="white-space:pre-wrap;font-family:inherit;font-size:12px">${esc(a.fullText)}</pre>
+        </div>
+        <div class="panel panel-plain">
+          <div class="panel-title">💬 Plain Language Explanation</div>
+          <pre style="white-space:pre-wrap;font-family:inherit;font-size:12px">${esc(a.plainLanguage)}</pre>
+        </div>
+      </div>`;
+
+  // Check if this has MS comparison data
+  const hasMSData = MS.some(ms => ms[artKey] !== undefined);
+  if (hasMSData) {
+    html += `<h3 style="font-size:13px;margin-bottom:10px;color:var(--eu-mid)">
+      Member State Implementations — ${esc(a.id)} Differences
+    </h3>
+    <p style="font-size:11px;color:#777;margin-bottom:10px">Blank = no confirmed difference. Click a country row to view its full profile.</p>
+    <table class="ms-table">
+      <thead><tr><th>Country</th><th>National Law</th><th>Status</th><th>Differences / Notes for ${esc(a.id)}</th></tr></thead>
+      <tbody>`;
+
+    MS.forEach((ms, i) => {
+      const val = ms[artKey] || '';
+      const ccls = cellClass(val);
+      const alt = i % 2 === 0 ? 'alt' : '';
+      html += `<tr class="${alt}" onclick="showView('country-detail',${i})" style="cursor:pointer">
+        <td><strong>${ms.flag} ${esc(ms.country)}</strong></td>
+        <td style="font-size:11px">${esc(ms.lawRef.substring(0,60))}${ms.lawRef.length>60?'…':''}</td>
+        <td style="font-size:11px">${esc(ms.status)}</td>
+        <td class="${ccls}">${cellVal(val)}</td>
+      </tr>`;
+    });
+    html += `</tbody></table>`;
+  }
+  html += `</div></div>`;
+  document.getElementById('view-article-detail').innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// COUNTRY DETAIL VIEW
+// ══════════════════════════════════════════════════════════════════════
+function renderCountryDetail(idx) {
+  const ms = MS[idx];
+
+  document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+  const smsEl = document.getElementById('sms-'+idx);
+  if (smsEl) { smsEl.classList.add('active'); smsEl.scrollIntoView({block:'nearest'}); }
+
+  const isNT = ms.status.startsWith('Not fully');
+
+  const params = [
+    ['Law Reference', 'N/A — Directive itself', ms.lawRef],
+    ['Language of Law', 'N/A', ms.lawLanguage || 'N/A'],
+    ['Published', 'Transposition deadline: 22 June 2023', ms.published],
+    ['Transposition Status', 'Confirmed by 22 June 2023', ms.status],
+    ['Effective FY', 'FY starting on/after 22 June 2024', ms.effectiveFY],
+    ['Revenue Threshold (Art. 48b)', '€750 million', ms.threshold],
+    ['Publication Deadline (Art. 48d)', '12 months after balance sheet date', ms.pubDeadline],
+    ['Website Publication Exemption (Art. 48d)', 'Optional — MS may allow', ms.websiteExemption],
+    ['Safeguard Clause (Art. 48g)', 'Optional — MS may allow', ms.safeguard],
+    ['Safeguard Period (Art. 48g)', 'Maximum 5 years', ms.safeguardPeriod],
+    ['Language Requirement (Art. 48d(3))', 'At least one official EU language', ms.langReq],
+    ['Penalties', 'Not specified in Directive', ms.penalties],
+  ];
+
+  let html = `<div class="card">
+    <div class="card-header" style="font-size:15px">
+      <span style="font-size:28px">${ms.flag}</span>
+      ${esc(ms.country)} — Implementing Legislation
+      <span style="margin-left:auto;font-size:11px;opacity:0.8">${esc(ms.status)}</span>
+    </div>
+    <div class="card-body">
+      <div class="profile-grid">
+        <div class="pg-row">
+          <div class="pg-header pg-label">Parameter</div>
+          <div class="pg-header pg-directive">Directive Requirement</div>
+          <div class="pg-header pg-ms">${esc(ms.country)} National Law</div>
+        </div>`;
+
+  params.forEach(([param, dir, val]) => {
+    let msClass = 'pg-ms';
+    if (isNT) msClass += ' notrans';
+    else if (String(val).includes('DIFFERENCE')) msClass += ' diff';
+    else if (['TBD','Unknown','Not confirmed'].includes(String(val))) msClass += ' unknown';
+    else if (ms.status.includes('Early') && param === 'Effective FY') msClass += ' early';
+
+    html += `<div class="pg-row">
+      <div class="pg-label">${esc(param)}</div>
+      <div class="pg-directive">${esc(dir)}</div>
+      <div class="${msClass}">${esc(String(val))}</div>
+    </div>`;
+  });
+
+  html += `</div><!-- end profile-grid -->
+
+  <h3 style="margin-top:20px;margin-bottom:10px;font-size:13px;color:var(--eu-mid)">
+    Article-by-Article Comparison
+  </h3>
+  <p style="font-size:11px;color:#777;margin-bottom:10px">Blank = no confirmed difference from the Directive. Click an article row for the full Directive text.</p>
+  <table class="ms-table">
+    <thead><tr><th>Article</th><th>Topic</th><th>Directive (Summary)</th><th>${esc(ms.country)} — Difference / Note</th></tr></thead>
+    <tbody>`;
+
+  const artRows = [
+    {artId:"Art. 48b", topic:"Scope & undertakings in scope", artKey:"art48b"},
+    {artId:"Art. 48c", topic:"Content of the report", artKey:"art48c"},
+    {artId:"Art. 48d", topic:"Publication & accessibility", artKey:"art48d"},
+    {artId:"Art. 48e", topic:"Consolidated report / subsidiary exemption", artKey:"art48e"},
+    {artId:"Art. 48f", topic:"Director responsibility statement", artKey:"art48f"},
+    {artId:"Art. 48g", topic:"Safeguard clause", artKey:"art48g"},
+    {artId:"Art. 48h", topic:"Voluntary extension to smaller entities", artKey:"art48h"},
+  ];
+
+  artRows.forEach((row, i) => {
+    const val = ms[row.artKey] || '';
+    const ccls = cellClass(val);
+    const alt = i % 2 === 0 ? 'alt' : '';
+    const artIdx = ARTICLES.findIndex(a => a.id === row.artId);
+    const dirSummary = artIdx >= 0 ? ARTICLES[artIdx].plainLanguage.substring(0,100)+'…' : '';
+    html += `<tr class="${alt}" onclick="showView('article-detail',${artIdx})" style="cursor:pointer">
+      <td><strong>${esc(row.artId)}</strong></td>
+      <td>${esc(row.topic)}</td>
+      <td style="font-size:11px;color:#555">${esc(dirSummary)}</td>
+      <td class="${ccls}">${cellVal(val)}</td>
+    </tr>`;
+  });
+
+  html += `</tbody></table>
+
+  <div style="margin-top:16px;padding:12px;background:#F8F8F8;border-radius:8px;font-size:12px">
+    <strong>Additional Notes:</strong> ${esc(ms.notes)}
+    <br><br><strong>Source:</strong> <em>${esc(ms.source)}</em>
+  </div>
+
+  </div></div>`;
+  document.getElementById('view-country-detail').innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// COUNTRIES VIEW
+// ══════════════════════════════════════════════════════════════════════
+function renderCountries() {
+  let html = `<div class="card">
+    <div class="card-header">All 27 Member States — Click to View Details</div>
+    <div class="card-body">
+    <table class="ms-table">
+      <thead><tr>
+        <th>Country</th><th>Law Reference</th><th>Published</th><th>Status</th>
+        <th>Effective FY</th><th>Confirmed Differences</th>
+      </tr></thead><tbody>`;
+
+  MS.forEach((ms, i) => {
+    const alt = i % 2 === 0 ? 'alt' : '';
+    const isNT = ms.status.startsWith('Not');
+    const rowCls = isNT ? 'cell-notrans' : '';
+    const diffFields = ['art48b','art48c','art48d','art48e','art48f','art48g','art48h'];
+    const diffs = diffFields.filter(f => ms[f] && ms[f].includes('DIFFERENCE')).map(f => f.toUpperCase().replace('ART','Art. ').replace('OUTER','(Outer)'));
+    const diffStr = diffs.length > 0 ? diffs.join(', ') : '—';
+
+    html += `<tr class="${alt}" onclick="showView('country-detail',${i})" style="cursor:pointer">
+      <td><strong>${ms.flag} ${esc(ms.country)}</strong></td>
+      <td style="font-size:11px">${esc(ms.lawRef.substring(0,55))}${ms.lawRef.length>55?'…':''}</td>
+      <td style="font-size:11px">${esc(ms.published)}</td>
+      <td class="${isNT?'cell-notrans':ms.status.includes('Early')?'cell-same':ms.status.includes('Late')?'cell-unknown':''}" style="font-size:11px">${esc(ms.status)}</td>
+      <td style="font-size:11px">${esc(ms.effectiveFY)}</td>
+      <td class="${diffs.length>0?'cell-diff':''}" style="font-size:11px">${esc(diffStr)}</td>
+    </tr>`;
+  });
+  html += `</tbody></table></div></div>`;
+  document.getElementById('view-countries').innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// MATRIX VIEW
+// ══════════════════════════════════════════════════════════════════════
+function renderMatrix() {
+  const artRows = [
+    {artId:"Art. 48b", label:"Art. 48b: Scope", key:"art48b"},
+    {artId:"Art. 48c", label:"Art. 48c: Report Content", key:"art48c"},
+    {artId:"Art. 48d", label:"Art. 48d: Publication", key:"art48d"},
+    {artId:"Art. 48e", label:"Art. 48e: Consolidated Rpt", key:"art48e"},
+    {artId:"Art. 48f", label:"Art. 48f: Director Statement", key:"art48f"},
+    {artId:"Art. 48g", label:"Art. 48g: Safeguard Clause", key:"art48g"},
+    {artId:"Art. 48h", label:"Art. 48h: Voluntary Extension", key:"art48h"},
+  ];
+
+  let html = `<div class="card">
+    <div class="card-header">Article × Member State Comparison Matrix</div>
+    <div class="card-body" style="overflow-x:auto">
+    <p style="font-size:11px;color:#777;margin-bottom:10px">Click any cell to view country detail. Scroll horizontally to see all Member States.</p>
+    <table class="ms-table" style="min-width:2000px">
+      <thead><tr>
+        <th style="min-width:160px;position:sticky;left:0;background:var(--eu-mid)">Article / Topic</th>`;
+
+  MS.forEach(ms => {
+    html += `<th style="min-width:100px;font-size:10px">${ms.flag}<br>${esc(ms.country)}</th>`;
+  });
+  html += `</tr></thead><tbody>`;
+
+  artRows.forEach((row, ri) => {
+    const alt = ri % 2 === 0 ? '#FAFCFF' : '#FFF';
+    html += `<tr>
+      <td style="font-weight:700;font-size:12px;position:sticky;left:0;background:var(--eu-light);cursor:pointer"
+          onclick="showView('article-detail',${ARTICLES.findIndex(a=>a.id===row.artId)})">${esc(row.label)}</td>`;
+    MS.forEach((ms, mi) => {
+      const val = ms[row.key] || '';
+      const ccls = cellClass(val);
+      const disp = val === '' ? '<em style="font-size:10px;color:#ccc">—</em>' : (val.length > 60 ? esc(val.substring(0,60))+'…' : esc(val));
+      html += `<td class="${ccls}" style="font-size:10px;cursor:pointer" onclick="showView('country-detail',${mi})" title="${esc(val)}">${disp}</td>`;
+    });
+    html += `</tr>`;
+  });
+  html += `</tbody></table></div></div>`;
+  document.getElementById('view-matrix').innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// TAB SWITCHER
+// ══════════════════════════════════════════════════════════════════════
+function switchTab(btn, tabId) {
+  btn.closest('.card, .main, body').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  btn.closest('.card, .main, body').querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-'+tabId).classList.add('active');
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// SEARCH
+// ══════════════════════════════════════════════════════════════════════
+function runSearch(term) {
+  if (!term || term.length < 2) {
+    if (currentView === 'search') showView('home');
+    return;
+  }
+  const t = term.toLowerCase();
+  showView('search');
+
+  const hits = [];
+  // Search articles
+  ARTICLES.forEach((a, i) => {
+    const combined = (a.id + ' ' + a.title + ' ' + a.fullText + ' ' + a.plainLanguage).toLowerCase();
+    if (combined.includes(t)) {
+      const excerpt = (a.fullText + ' ' + a.plainLanguage).substring(0, 200);
+      hits.push({ type:'DIRECTIVE ARTICLE', title: a.id + ' — ' + a.title,
+        excerpt, action: () => showView('article-detail', i) });
+    }
+  });
+  // Search MS
+  MS.forEach((ms, i) => {
+    const combined = Object.values(ms).join(' ').toLowerCase();
+    if (combined.includes(t)) {
+      const excerpt = ms.notes.substring(0, 180);
+      hits.push({ type:'MEMBER STATE', title: ms.flag + ' ' + ms.country,
+        excerpt, action: () => showView('country-detail', i) });
+    }
+  });
+
+  let html = `<h3 style="margin-bottom:12px;font-size:14px">
+    Search results for "<strong>${esc(term)}</strong>" — ${hits.length} found
+  </h3><div class="search-results">`;
+
+  if (hits.length === 0) {
+    html += `<div style="color:#888;font-size:13px">No results found. Try a different search term.</div>`;
+  } else {
+    hits.forEach(h => {
+      html += `<div class="search-hit" onclick="(${h.action.toString()})()">
+        <div class="hit-type">${h.type}</div>
+        <div class="hit-title">${highlight(h.title, term)}</div>
+        <div class="hit-excerpt">${highlight(h.excerpt, term)}</div>
+      </div>`;
+    });
+  }
+  html += `</div>`;
+  document.getElementById('view-search').innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════════════
+buildSidebar();
+showView('home');
+</script>
+</body>
+</html>
